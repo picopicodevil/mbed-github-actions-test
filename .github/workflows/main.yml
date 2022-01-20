@@ -1,7 +1,11 @@
-name: Build spirit_target
+name: Build spirit
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build-cli-v1:
@@ -12,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        target: [NUCLEO_F303K8]
+        target: [NUCLEO_F303K8, LPC1768]
         profile: [release, debug, develop]
 
     steps:
@@ -21,9 +25,10 @@ jobs:
       - name: build-mbed-cli
         run: |
           set -e
+          mbed new .
           mbed deploy
+          echo "int main(){}">main.cpp
           mbed compile -t GCC_ARM -m ${{ matrix.target }} --profile ${{ matrix.profile }}
-
   build-cli-v2:
     container:
       image: ghcr.io/armmbed/mbed-os-env:master-latest
@@ -32,7 +37,7 @@ jobs:
 
     strategy:
       matrix:
-        target: [NUCLEO_F303K8]
+        target: [NUCLEO_F303K8, LPC1768]
         profile: [release, debug, develop]
 
     steps:
@@ -41,5 +46,6 @@ jobs:
       - name: build-mbed-tools
         run: |
           set -e
+          mbed-tools new .
           mbed-tools deploy
           mbed-tools compile -t GCC_ARM -m ${{ matrix.target }} --profile ${{ matrix.profile }}
