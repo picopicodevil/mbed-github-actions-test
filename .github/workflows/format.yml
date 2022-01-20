@@ -16,30 +16,31 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: update-package-lists
+        run: |
+          sudo apt update
+
       - name: clnag-format
         run: |
-          sudo apt update
           sudo apt install clang-format-12
-          touch .codecheckignore
           find -type f \
             | ( grep '.*\.\(c\|cpp\|h\|hpp\)$' || true ) \
-            | ( grep -v -f .codecheckignore || true ) \
+            # | ( grep -v -f .codecheckignore || true ) \
             | while read file; do clang-format-12 -i -style=file "${file}"; done
 
-      - name: astyle checks
+      - name: Astyle
         run: |
-          sudo apt update
           sudo apt install astyle
-          touch .codecheckignore
           find -type f \
             | ( grep '.*\.\(c\|cpp\|h\|hpp\)$' || true ) \
-            | ( grep -v -f .codecheckignore || true ) \
+            # | ( grep -v -f .codecheckignore || true ) \
             | while read file; do astyle -n --options=.astylerc "${file}"; done
 
-      - name: git commmit
-        run: |
-          git config --global user.email "formatter@example.com"
-          git config --global user.name "formatter"
-          git add .
-          git commit -m "[update] Format code by Github Actions" || true
-          git push origin || true
+      - name: Git commmit
+        uses: EndBug/add-and-commit@v4
+        with:
+          author_name: Formatting Robot
+          author_email: robot@example.com
+          message: "[update] format changes"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
