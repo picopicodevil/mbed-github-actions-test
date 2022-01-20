@@ -42,4 +42,4 @@ jobs:
           git config --global user.name "formatter"
           git add .
           git commit -m "[update] Format code by Github Actions"
-          git push origin
+          git push origin || true
