@@ -25,7 +25,6 @@ jobs:
           sudo apt install clang-format-12
           find -type f \
             | ( grep '.*\.\(c\|cpp\|h\|hpp\)$' || true ) \
-            # | ( grep -v -f .codecheckignore || true ) \
             | while read file; do clang-format-12 -i -style=file "${file}"; done
 
       - name: Astyle
@@ -33,7 +32,6 @@ jobs:
           sudo apt install astyle
           find -type f \
             | ( grep '.*\.\(c\|cpp\|h\|hpp\)$' || true ) \
-            # | ( grep -v -f .codecheckignore || true ) \
             | while read file; do astyle -n --options=.astylerc "${file}"; done
 
       - name: Git commmit
