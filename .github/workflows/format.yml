@@ -20,6 +20,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install clang-format-12
+          touch .codecheckignore
           find -type f \
             | ( grep '.*\.\(c\|cpp\|h\|hpp\)$' || true ) \
             | ( grep -v -f .codecheckignore || true ) \
@@ -30,6 +31,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install astyle
+          touch .codecheckignore
           find -type f \
             | ( grep '.*\.\(c\|cpp\|h\|hpp\)$' || true ) \
             | ( grep -v -f .codecheckignore || true ) \
