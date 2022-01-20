@@ -18,13 +18,13 @@ jobs:
 
       - name: update-package-lists
         run: |
-          sudo apt update
+          sudo apt-get update
 
       - name: clnag-format
         run: |
           if [ -e .clang-format ]; then
             echo ".clang-format exists."
-            sudo apt install clang-format-12
+            sudo apt-get install clang-format-12
             touch .codecheckignore
             find -type f \
               | ( grep '.*\.\(c\|cpp\|h\|hpp\)$' || true ) \
@@ -37,7 +37,7 @@ jobs:
         run: |
           if [ -e .astylerc ]; then
             echo ".astylerc exists."
-            sudo apt install astyle
+            sudo apt-get install astyle
             touch .codecheckignore
             find -type f \
               | ( grep '.*\.\(c\|cpp\|h\|hpp\)$' || true ) \
