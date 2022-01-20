@@ -1,4 +1,4 @@
-name: Run Format Linter
+name: Build spirit
 
 on:
   push:
@@ -8,41 +8,44 @@ on:
   workflow_dispatch:
 
 jobs:
-  format:
+  build-cli-v1:
+    container:
+      image: ghcr.io/armmbed/mbed-os-env:master-latest
+
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        target: [NUCLEO_F303K8, LPC1768]
+        profile: [release, debug, develop]
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: update-package-lists
+      - name: build-mbed-cli
         run: |
-          sudo apt update
+          set -e
+          mbed new .
+          mbed deploy
+          echo "int main(){}">main.cpp
+          mbed compile -t GCC_ARM -m ${{ matrix.target }} --profile ${{ matrix.profile }}
+  build-cli-v2:
+    container:
+      image: ghcr.io/armmbed/mbed-os-env:master-latest
 
-      - name: clnag-format
-        run: |
-          sudo apt install clang-format-12
-          touch .codecheckignore
-          find -type f \
-            | ( grep '.*\.\(c\|cpp\|h\|hpp\)$' || true ) \
-            | ( grep -v -f .codecheckignore || true ) \
-            | while read file; do clang-format-12 -i -style=file "${file}"; done
+    runs-on: ubuntu-latest
 
-      - name: astyle checks
-        run: |
-          sudo apt install astyle
-          touch .codecheckignore
-          find -type f \
-            | ( grep '.*\.\(c\|cpp\|h\|hpp\)$' || true ) \
-            | ( grep -v -f .codecheckignore || true ) \
-            | while read file; do astyle -n --options=.astylerc "${file}"; done
+    strategy:
+      matrix:
+        target: [NUCLEO_F303K8, LPC1768]
+        profile: [release, debug, develop]
 
-      - name: git commmit
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: build-mbed-tools
         run: |
-          git config --global user.email "formatter@example.com"
-          git config --global user.name "formatter"
-          git add .
-          git commit -m "[update] Format code by Github Actions" || true
-          git pull origin/${{ GITHUB_HEAD_REF	}}
-          git push origin || true
+          set -e
+          mbed-tools new .
+          mbed-tools deploy
+          mbed-tools compile -t GCC_ARM -m ${{ matrix.target }} --profile ${{ matrix.profile }}
