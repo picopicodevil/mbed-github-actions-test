@@ -41,5 +41,5 @@ jobs:
           git config --global user.email "formatter@example.com"
           git config --global user.name "formatter"
           git add .
-          git commit -m "[update] Format code by Github Actions"
+          git commit -m "[update] Format code by Github Actions" || true
           git push origin || true
