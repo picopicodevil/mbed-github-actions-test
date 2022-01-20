@@ -24,7 +24,7 @@ jobs:
           find -type f \
             | ( grep '.*\.\(c\|cpp\|h\|hpp\)$' || true ) \
             | ( grep -v -f .codecheckignore || true ) \
-            | while read file; do clang-foramt-12 -i -style=file "${file}"; done
+            | while read file; do clang-format-12 -i -style=file "${file}"; done
           git diff --exit-code --diff-filter=d --color
 
       - name: astyle checks
