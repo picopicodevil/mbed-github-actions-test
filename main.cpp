@@ -1,2 +1,6 @@
 #include "mbed.h"
-int main() {while();}
+int main()
+{
+    while ()
+        ;
+}
