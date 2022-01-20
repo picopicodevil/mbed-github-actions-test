@@ -1,0 +1,45 @@
+name: Run Format Linter
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: clnag-format
+        run: |
+          sudo apt update
+          sudo apt install clang-format-12
+          find -type f \
+            | ( grep '.*\.\(c\|cpp\|h\|hpp\)$' || true ) \
+            | ( grep -v -f .codecheckignore || true ) \
+            | while read file; do clang-foramt-12 -i -style=file "${file}"; done
+          git diff --exit-code --diff-filter=d --color
+
+      - name: astyle checks
+        run: |
+          sudo apt update
+          sudo apt install astyle
+          find -type f \
+            | ( grep '.*\.\(c\|cpp\|h\|hpp\)$' || true ) \
+            | ( grep -v -f .codecheckignore || true ) \
+            | while read file; do astyle -n --options=.astylerc "${file}"; done
+          git diff --exit-code --diff-filter=d --color
+
+      - name: git commmit
+        run: |
+          git config --global user.email "formatter@example.com"
+          git config --global user.name "formatter"
+          git add .
+          git commit -m "[update] Format code by Github Actions"
+          git push origin
