@@ -16,9 +16,12 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: clnag-format
+      - name: update-package-lists
         run: |
           sudo apt update
+
+      - name: clnag-format
+        run: |
           sudo apt install clang-format-12
           touch .codecheckignore
           find -type f \
@@ -28,7 +31,6 @@ jobs:
 
       - name: astyle checks
         run: |
-          sudo apt update
           sudo apt install astyle
           touch .codecheckignore
           find -type f \
@@ -42,4 +44,5 @@ jobs:
           git config --global user.name "formatter"
           git add .
           git commit -m "[update] Format code by Github Actions" || true
+          git pull
           git push origin || true
